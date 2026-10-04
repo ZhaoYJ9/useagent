@@ -55,6 +55,7 @@ import type { TimelineArtifact } from "@/components/chat/timeline";
 import { ComposerPrefillProvider } from "@/components/chat/composer-prefill-context";
 import { SessionLatestRunProvider } from "@/components/chat/session-run-context";
 import { SessionThreadBreadcrumb } from "@/components/chat/session-thread-breadcrumb";
+import { SessionThreadActions } from "@/components/chat/session-thread-actions";
 import { useWorkpieceAutoOpen } from "@/components/chat/use-workpiece-auto-open";
 import { shouldFocusAutoOpened, workspaceSurfaceHasFocus } from "@/components/chat/workpiece-auto-open";
 import { WorkspaceOpenProvider } from "@/components/chat/workspace-open-context";
@@ -686,25 +687,12 @@ export function SessionView({ initialThread, initialOutline = null, initialRelat
                   so the SSR-provided root is authoritative for the page lifetime. */}
               <GitChips refs={runGitRefs(root)} />
             </div>
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Status pill + New session removed (user 2026-08-23): run state
-                  already lives in the composer/timeline and New thread in the
-                  sidebar - the header stays quiet. Stop remains the composer's. */}
-              {/* In sheet mode (below md, or a too-narrow md+ split) this is
-                  the rail's opener (the reopen strip covers side-by-side). */}
-              {hasRuntimeSurfaces && !sheetSurfacesOpen && (
-                <Button
-                  variant="ghost"
-                  size="small"
-                  iconOnly
-                  leadingIcon={RiLayoutRightLine}
-                  onClick={openSurfacesSheet}
-                  title="Open surfaces panel"
-                  aria-label="Open surfaces panel"
-                  className={splitTooNarrow ? undefined : "md:hidden"}
-                />
-              )}
-            </div>
+            <SessionThreadActions
+              exportData={{ threadId: rootId, turns, snapshot }}
+              showSurfaceOpener={hasRuntimeSurfaces && !sheetSurfacesOpen}
+              splitTooNarrow={splitTooNarrow}
+              onOpenSurfaces={openSurfacesSheet}
+            />
           </div>
 
           {/* Fan-out subagents in this thread that aren't on the main reply line —
